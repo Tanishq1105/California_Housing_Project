@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>California Housing Predictor</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1><i class="fa-solid fa-house"></i> California Housing Predictor</h1>
+    <p class="subtitle">Multi-Model Machine Learning Dashboard</p>
+
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for msg in messages %}
+          <div class="alert">{{ msg }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <!-- Input Form -->
+    <form method="POST">
+
+        <div class="form-group">
+            <label>Median Income</label>
+            <input type="number" step="any" name="MedInc" required>
+        </div>
+
+        <div class="form-group">
+            <label>House Age</label>
+            <input type="number" step="any" name="HouseAge" required>
+        </div>
+
+        <div class="form-group">
+            <label>Average Rooms</label>
+            <input type="number" step="any" name="AveRooms" required>
+        </div>
+
+        <div class="form-group">
+            <label>Average Bedrooms</label>
+            <input type="number" step="any" name="AveBedrms" required>
+        </div>
+
+        <div class="form-group">
+            <label>Population</label>
+            <input type="number" step="any" name="Population" required>
+        </div>
+
+        <div class="form-group">
+            <label>Average Occupancy</label>
+            <input type="number" step="any" name="AveOccup" required>
+        </div>
+
+        <div class="form-group">
+            <label>Latitude</label>
+            <input type="number" step="any" name="Latitude" required>
+        </div>
+
+        <div class="form-group">
+            <label>Longitude</label>
+            <input type="number" step="any" name="Longitude" required>
+        </div>
+
+        <button type="submit">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Prediction
+        </button>
+    </form>
+
+    <!-- Results -->
+    {% if results %}
+    <div class="results">
+        <h2>Prediction Results</h2>
+
+        <p>
+            <span><i class="fa-solid fa-chart-line"></i> Regression Value</span>
+            <strong>${{ results.regression }}k</strong>
+        </p>
+
+        <p>
+            <span><i class="fa-solid fa-tree"></i> Random Forest</span>
+            <strong class="badge {{ results.rf|lower }}">{{ results.rf }}</strong>
+        </p>
+
+        <p>
+            <span><i class="fa-solid fa-bullseye"></i> SVM</span>
+            <strong class="badge {{ results.svm|lower }}">{{ results.svm }}</strong>
+        </p>
+
+        <p>
+            <span><i class="fa-solid fa-brain"></i> Neural Network</span>
+            <strong class="badge {{ results.nn|lower }}">{{ results.nn }}</strong>
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+
+</body>
+</html>
