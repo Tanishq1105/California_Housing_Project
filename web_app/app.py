@@ -1,21 +1,21 @@
-from flask import Flask, render_template, request, flash
+import os
+import logging
 import numpy as np
 import joblib
-import logging
-import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "2"
+import pandas as pd
+from flask import Flask, render_template, request, flash
 from tensorflow.keras.models import load_model
 
 # ---------------------------------------------------
 # App Setup
 # ---------------------------------------------------
 app = Flask(__name__)
-app.secret_key = "super_secret_key"
+app.secret_key = os.environ.get("SECRET_KEY", "fallback_secret")
 
 logging.basicConfig(level=logging.INFO)
 
 # ---------------------------------------------------
-# Model Configuration
+# Paths
 # ---------------------------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -39,41 +39,28 @@ nn_model = None
 try:
     models = {name: joblib.load(path) for name, path in MODEL_PATHS.items()}
     nn_model = load_model(NN_MODEL_PATH)
-
     logging.info("All models loaded successfully.")
-
 except Exception as e:
-    logging.error(f"Error loading models: {e}")
+    logging.error(f"Model loading error: {e}")
 
 # ---------------------------------------------------
-# Helper Function
+# Prediction Function
 # ---------------------------------------------------
 def get_predictions(features):
-    """
-    Transform input and return predictions
-    from all models.
-    """
-
-    import pandas as pd
 
     columns = [
-    "MedInc","HouseAge","AveRooms","AveBedrms",
-    "Population","AveOccup","Latitude","Longitude"
+        "MedInc","HouseAge","AveRooms","AveBedrms",
+        "Population","AveOccup","Latitude","Longitude"
     ]
 
     df_input = pd.DataFrame([features], columns=columns)
 
     data = models["scaler"].transform(df_input)
 
-
-    # Regression
     reg_pred = models["regression"].predict(data)[0]
-
-    # Classification
     rf_pred = LABELS[models["rf"].predict(data)[0]]
     svm_pred = LABELS[models["svm"].predict(data)[0]]
 
-    # Neural Network
     nn_probs = nn_model.predict(data, verbose=0)
     nn_pred = LABELS[np.argmax(nn_probs)]
 
@@ -93,7 +80,6 @@ def home():
     results = None
 
     if request.method == "POST":
-
         try:
             feature_keys = [
                 "MedInc", "HouseAge", "AveRooms", "AveBedrms",
@@ -104,18 +90,14 @@ def home():
 
             results = get_predictions(features)
 
-        except ValueError:
-            flash("Please enter valid numeric values.")
-        except KeyError as e:
-            flash(f"Missing input field: {e}")
         except Exception as e:
-            flash(f"Unexpected error: {e}")
+            logging.error(e)
+            flash("Something went wrong. Check inputs or server logs.")
 
     return render_template("index.html", results=results)
 
 # ---------------------------------------------------
-# Run App
+# Run (for local only)
 # ---------------------------------------------------
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True)
