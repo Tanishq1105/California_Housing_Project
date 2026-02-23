@@ -17,14 +17,16 @@ logging.basicConfig(level=logging.INFO)
 # ---------------------------------------------------
 # Model Configuration
 # ---------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 MODEL_PATHS = {
-    "regression": "models/regression_model.pkl",
-    "rf": "models/classifier_model.pkl",
-    "svm": "models/svm_model.pkl",
-    "scaler": "models/scaler.pkl"
+    "regression": os.path.join(BASE_DIR, "models/regression_model.pkl"),
+    "rf": os.path.join(BASE_DIR, "models/classifier_model.pkl"),
+    "svm": os.path.join(BASE_DIR, "models/svm_model.pkl"),
+    "scaler": os.path.join(BASE_DIR, "models/scaler.pkl")
 }
 
-NN_MODEL_PATH = "models/neural_network_model.keras"
+NN_MODEL_PATH = os.path.join(BASE_DIR, "models/neural_network_model.keras")
 
 LABELS = {0: "Low", 1: "Medium", 2: "High"}
 
