@@ -61,14 +61,15 @@ def get_predictions(features):
     rf_pred = LABELS[models["rf"].predict(data)[0]]
     svm_pred = LABELS[models["svm"].predict(data)[0]]
 
-    nn_probs = nn_model.predict(data, verbose=0)
-    nn_pred = LABELS[np.argmax(nn_probs)]
+#    nn_probs = nn_model.predict(data, verbose=0)
+#    nn_pred = LABELS[np.argmax(nn_probs)]
+    nn_pred = "Disabled"
 
     return {
-        "regression": f"{reg_pred:.3f}",
-        "rf": rf_pred,
-        "svm": svm_pred,
-        "nn": nn_pred
+    "regression": f"{reg_pred:.3f}",
+    "rf": rf_pred,
+    "svm": svm_pred,
+    "nn": "Disabled"
     }
 
 # ---------------------------------------------------
